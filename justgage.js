@@ -49,6 +49,10 @@ JustGage = function(config) {
     // value gauge is showing
     value: kvLookup('value', config, dataset, 0, 'float'),
 
+    // target : float
+    // target gauge is showing
+    target: kvLookup('target', config, dataset, 0, 'float'),
+
     // defaults : bool
     // defaults parameter to use
     defaults: kvLookup('defaults', config, dataset, 0, false),
@@ -228,30 +232,42 @@ JustGage = function(config) {
 
     // pointerOptions : object
     // define pointer look
-    pointerOptions: kvLookup('pointerOptions', config, dataset, [])
+    pointerOptions: kvLookup('pointerOptions', config, dataset, []),
+
+    // targetPointer : bool
+    // show value pointer
+    targetPointer: kvLookup('targetPointer', config, dataset, false),
+
+    // targetPointerOptions : object
+    // define targetPointer look
+    targetPointerOptions: kvLookup('targetPointerOptions', config, dataset, []),
+
+    // animateTarget : bool
+    // define targetPointer look
+    animateTarget: kvLookup('animateTarget', config, dataset, true),
   };
 
   // variables
   var
-    canvasW,
-    canvasH,
-    widgetW,
-    widgetH,
-    aspect,
-    dx,
-    dy,
-    valueFontSize,
-    valueX,
-    valueY,
-    labelFontSize,
-    labelX,
-    labelY,
-    minFontSize,
-    minX,
-    minY,
-    maxFontSize,
-    maxX,
-    maxY;
+      canvasW,
+      canvasH,
+      widgetW,
+      widgetH,
+      aspect,
+      dx,
+      dy,
+      valueFontSize,
+      valueX,
+      valueY,
+      labelFontSize,
+      labelX,
+      labelY,
+      minFontSize,
+      minX,
+      minY,
+      maxFontSize,
+      maxX,
+      maxY;
 
   // overflow values
   if (obj.config.value > obj.config.max) obj.config.value = obj.config.max;
@@ -611,6 +627,31 @@ JustGage = function(config) {
     }
   }
 
+  if (obj.config.targetPointer) {
+    // target needle
+    obj.targetNeedle = obj.canvas.path().attr({
+      "stroke": (obj.config.targetPointer.stroke !== null && obj.config.targetPointer.stroke !== undefined) ? obj.config.targetPointer.stroke : "none",
+      "stroke-width": (obj.config.targetPointer.stroke_width !== null && obj.config.targetPointer.stroke_width !== undefined) ? obj.config.targetPointer.stroke_width : 0,
+      "stroke-linecap": (obj.config.targetPointer.stroke_linecap !== null && obj.config.targetPointer.stroke_linecap !== undefined) ? obj.config.targetPointer.stroke_linecap : "square",
+      "fill": (obj.config.targetPointer.color !== null && obj.config.targetPointer.color !== undefined) ? obj.config.targetPointer.color : "#000000",
+      ndl: [
+        obj.config.min,
+        obj.config.min,
+        obj.config.max,
+        obj.params.widgetW,
+        obj.params.widgetH,
+        obj.params.dx,
+        obj.params.dy,
+        obj.config.gaugeWidthScale,
+        obj.config.donut
+      ]
+    });
+
+    if (obj.config.donut) {
+      obj.targetNeedle.transform("r" + obj.config.donutStartAngle + ", " + (obj.params.widgetW / 2 + obj.params.dx) + ", " + (obj.params.widgetH / 2 + obj.params.dy));
+    }
+  }
+
   // value
   obj.txtValue = obj.canvas.text(obj.params.valueX, obj.params.valueY, 0);
   obj.txtValue.attr({
@@ -779,6 +820,30 @@ JustGage = function(config) {
     }, obj.config.startAnimationTime, obj.config.startAnimationType);
   }
 
+  if (obj.config.targetPointer) {
+    var startAnimationTime;
+
+    if (obj.config.animateTarget) {
+      startAnimationTime = obj.config.startAnimationTime;
+    } else {
+      startAnimationTime = 0;
+    }
+
+    obj.targetNeedle.animate({
+      ndl: [
+        obj.config.target,
+        obj.config.min,
+        obj.config.max,
+        obj.params.widgetW,
+        obj.params.widgetH,
+        obj.params.dx,
+        obj.params.dy,
+        obj.config.gaugeWidthScale,
+        obj.config.donut
+      ]
+    }, startAnimationTime, obj.config.startAnimationType);
+  }
+
   obj.txtValue.animate({
     "fill-opacity": (obj.config.hideValue) ? "0" : "1"
   }, obj.config.startAnimationTime, obj.config.startAnimationType);
@@ -878,6 +943,22 @@ JustGage.prototype.refresh = function(val, max) {
     obj.needle.animate({
       ndl: [
         rvl,
+        obj.config.min,
+        obj.config.max,
+        obj.params.widgetW,
+        obj.params.widgetH,
+        obj.params.dx,
+        obj.params.dy,
+        obj.config.gaugeWidthScale,
+        obj.config.donut
+      ]
+    }, obj.config.refreshAnimationTime, obj.config.refreshAnimationType);
+  }
+
+  if (obj.config.targetPointer) {
+    obj.targetNeedle.animate({
+      ndl: [
+        obj.config.target,
         obj.config.min,
         obj.config.max,
         obj.params.widgetW,
@@ -1151,14 +1232,14 @@ function onCreateElementNsReady(func) {
 var ie = (function() {
 
   var undef,
-    v = 3,
-    div = document.createElement('div'),
-    all = div.getElementsByTagName('i');
+      v = 3,
+      div = document.createElement('div'),
+      all = div.getElementsByTagName('i');
 
   while (
-    div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
-    all[0]
-  );
+      div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
+          all[0]
+      );
   return v > 4 ? v : undef;
 }());
 
