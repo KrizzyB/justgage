@@ -632,10 +632,10 @@ JustGage = function(config) {
   if (obj.config.targetPointer) {
     // target needle
     obj.targetNeedle = obj.canvas.path().attr({
-      "stroke": (obj.config.targetPointer.stroke !== null && obj.config.targetPointer.stroke !== undefined) ? obj.config.targetPointer.stroke : "none",
-      "stroke-width": (obj.config.targetPointer.stroke_width !== null && obj.config.targetPointer.stroke_width !== undefined) ? obj.config.targetPointer.stroke_width : 0,
-      "stroke-linecap": (obj.config.targetPointer.stroke_linecap !== null && obj.config.targetPointer.stroke_linecap !== undefined) ? obj.config.targetPointer.stroke_linecap : "square",
-      "fill": (obj.config.targetPointer.color !== null && obj.config.targetPointer.color !== undefined) ? obj.config.targetPointer.color : "#000000",
+      "stroke": (obj.config.targetPointerOptions.stroke !== null && obj.config.targetPointerOptions.stroke !== undefined) ? obj.config.targetPointerOptions.stroke : "none",
+      "stroke-width": (obj.config.targetPointerOptions.stroke_width !== null && obj.config.targetPointerOptions.stroke_width !== undefined) ? obj.config.targetPointerOptions.stroke_width : 0,
+      "stroke-linecap": (obj.config.targetPointerOptions.stroke_linecap !== null && obj.config.targetPointerOptions.stroke_linecap !== undefined) ? obj.config.targetPointerOptions.stroke_linecap : "square",
+      "fill": (obj.config.targetPointerOptions.color !== null && obj.config.targetPointerOptions.color !== undefined) ? obj.config.targetPointerOptions.color : "#000000",
       ndl: [
         obj.config.min,
         obj.config.min,
@@ -1170,16 +1170,16 @@ function cutHex(str) {
 /**  Human friendly number suffix - @robertsLando */
 function humanFriendlyNumber(n, d) {
   var d2, i, s, c;
-  
+
   d2 =  Math.pow(10, d);
   s = " KMGTPE";
   i = 0;
   c = 1000;
-  
+
   while((n >= c || n <= -c) && ++i < s.length) n = n / c;
 
   i = i >= s.length ? s.length - 1 : i;
-  
+
   return Math.round(n * d2) / d2 +  s[i];
 }
 
