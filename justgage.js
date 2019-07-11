@@ -237,7 +237,7 @@ JustGage = function(config) {
     pointerOptions: kvLookup('pointerOptions', config, dataset, []),
 
     // targetPointer : bool
-    // show value pointer
+    // show target pointer
     targetPointer: kvLookup('targetPointer', config, dataset, false),
 
     // targetPointerOptions : object
@@ -245,7 +245,7 @@ JustGage = function(config) {
     targetPointerOptions: kvLookup('targetPointerOptions', config, dataset, []),
 
     // animateTarget : bool
-    // define targetPointer look
+    // animate the target needle
     animateTarget: kvLookup('animateTarget', config, dataset, true),
   };
 
@@ -492,6 +492,89 @@ JustGage = function(config) {
     if (obj.config.pointerOptions.toplength != null && obj.config.pointerOptions.toplength != undefined) dlt = obj.config.pointerOptions.toplength;
     if (obj.config.pointerOptions.bottomlength != null && obj.config.pointerOptions.bottomlength != undefined) dlb = obj.config.pointerOptions.bottomlength;
     if (obj.config.pointerOptions.bottomwidth != null && obj.config.pointerOptions.bottomwidth != undefined) dw = obj.config.pointerOptions.bottomwidth;
+
+    var alpha, Ro, Ri, Cx, Cy, Xo, Yo, Xi, Yi, Xc, Yc, Xz, Yz, Xa, Ya, Xb, Yb, path;
+
+    if (donut) {
+
+      alpha = (1 - 2 * (value - min) / (max - min)) * Math.PI;
+      Ro = w / 2 - w / 30;
+      Ri = Ro - w / 6.666666666666667 * gws;
+
+      Cx = w / 2 + dx;
+      Cy = h / 2 + dy;
+
+      Xo = w / 2 + dx + Ro * Math.cos(alpha);
+      Yo = h - (h - Cy) - Ro * Math.sin(alpha);
+      Xi = w / 2 + dx + Ri * Math.cos(alpha);
+      Yi = h - (h - Cy) - Ri * Math.sin(alpha);
+
+      Xc = Xo + dlt * Math.cos(alpha);
+      Yc = Yo - dlt * Math.sin(alpha);
+      Xz = Xi - dlb * Math.cos(alpha);
+      Yz = Yi + dlb * Math.sin(alpha);
+
+      Xa = Xz + dw * Math.sin(alpha);
+      Ya = Yz + dw * Math.cos(alpha);
+      Xb = Xz - dw * Math.sin(alpha);
+      Yb = Yz - dw * Math.cos(alpha);
+
+      path = 'M' + Xa + ',' + Ya + ' ';
+      path += 'L' + Xb + ',' + Yb + ' ';
+      path += 'L' + Xc + ',' + Yc + ' ';
+      path += 'Z ';
+
+      return {
+        path: path
+      };
+
+    } else {
+      alpha = (1 - (value - min) / (max - min)) * Math.PI;
+      Ro = w / 2 - w / 10;
+      Ri = Ro - w / 6.666666666666667 * gws;
+
+      Cx = w / 2 + dx;
+      Cy = h / 1.25 + dy;
+
+      Xo = w / 2 + dx + Ro * Math.cos(alpha);
+      Yo = h - (h - Cy) - Ro * Math.sin(alpha);
+      Xi = w / 2 + dx + Ri * Math.cos(alpha);
+      Yi = h - (h - Cy) - Ri * Math.sin(alpha);
+
+      Xc = Xo + dlt * Math.cos(alpha);
+      Yc = Yo - dlt * Math.sin(alpha);
+      Xz = Xi - dlb * Math.cos(alpha);
+      Yz = Yi + dlb * Math.sin(alpha);
+
+      Xa = Xz + dw * Math.sin(alpha);
+      Ya = Yz + dw * Math.cos(alpha);
+      Xb = Xz - dw * Math.sin(alpha);
+      Yb = Yz - dw * Math.cos(alpha);
+
+      path = 'M' + Xa + ',' + Ya + ' ';
+      path += 'L' + Xb + ',' + Yb + ' ';
+      path += 'L' + Xc + ',' + Yc + ' ';
+      path += 'Z ';
+
+      return {
+        path: path
+      };
+    }
+
+    // var clear
+    alpha, Ro, Ri, Cx, Cy, Xo, Yo, Xi, Yi, Xc, Yc, Xz, Yz, Xa, Ya, Xb, Yb, path = null;
+  };
+
+  // ndl - custom attribute for generating needle path
+  obj.canvas.customAttributes.nd2 = function(value, min, max, w, h, dx, dy, gws, donut) {
+
+    var dlt = w * 3.5 / 100;
+    var dlb = w / 15;
+    var dw = w / 100;
+
+    if (obj.config.targetPointerOptions.toplength != null && obj.config.targetPointerOptions.toplength != undefined) dlt = obj.config.targetPointerOptions.toplength;
+    if (obj.config.targetPointerOptions.bottomlength != null && obj.config.targetPointerOptions.bottomlength != undefined) dlb = obj.config.targetPointerOptions.bottomlength;
+    if (obj.config.targetPointerOptions.bottomwidth != null && obj.config.targetPointerOptions.bottomwidth != undefined) dw = obj.config.targetPointerOptions.bottomwidth;
 
     var alpha, Ro, Ri, Cx, Cy, Xo, Yo, Xi, Yi, Xc, Yc, Xz, Yz, Xa, Ya, Xb, Yb, path;
 
@@ -832,7 +915,7 @@ JustGage = function(config) {
     }
 
     obj.targetNeedle.animate({
-      ndl: [
+      nd2: [
         obj.config.target,
         obj.config.min,
         obj.config.max,
@@ -959,7 +1042,7 @@ JustGage.prototype.refresh = function(val, max) {
 
   if (obj.config.targetPointer) {
     obj.targetNeedle.animate({
-      ndl: [
+      nd2: [
         obj.config.target,
         obj.config.min,
         obj.config.max,
