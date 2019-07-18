@@ -938,7 +938,7 @@ JustGage = function(config) {
 };
 
 /** Refresh gauge level */
-JustGage.prototype.refresh = function(val, max) {
+JustGage.prototype.refresh = function(val, target, max) {
 
   var obj = this;
   var displayVal, color, max = max || null;
@@ -995,6 +995,7 @@ JustGage.prototype.refresh = function(val, max) {
   }
   obj.originalValue = displayVal;
   obj.config.value = val * 1;
+  obj.config.target = target * 1;
 
   if (!obj.config.counter) {
     obj.txtValue.attr({
