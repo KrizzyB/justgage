@@ -77,9 +77,13 @@ JustGage = function(config) {
     // color of label showing current value
     valueFontFamily: kvLookup('valueFontFamily', config, dataset, "Arial"),
 
-    // symbol : string
-    // special symbol to show next to value
-    symbol: kvLookup('symbol', config, dataset, ''),
+    // startSymbol : string
+    // special symbol to show at the start of the value
+    startSymbol: kvLookup('startSymbol', config, dataset, ''),
+
+    // endSymbol : string
+    // special symbol to show at the end of the value
+    endSymbol: kvLookup('endSymbol', config, dataset, ''),
 
     // min : float
     // min value
@@ -826,11 +830,11 @@ JustGage = function(config) {
   if (obj.config.textRenderer) {
     obj.originalValue = obj.config.textRenderer(obj.originalValue);
   } else if (obj.config.humanFriendly) {
-    obj.originalValue = humanFriendlyNumber(obj.originalValue, obj.config.humanFriendlyDecimal) + obj.config.symbol;
+    obj.originalValue = obj.config.startSymbol + humanFriendlyNumber(obj.originalValue, obj.config.humanFriendlyDecimal) + obj.config.endSymbol;
   } else if (obj.config.formatNumber) {
-    obj.originalValue = formatNumber(obj.originalValue) + obj.config.symbol;
+    obj.originalValue = obj.config.startSymbol + formatNumber(obj.originalValue) + obj.config.endSymbol;
   } else {
-    obj.originalValue = (obj.originalValue * 1).toFixed(obj.config.decimals) + obj.config.symbol;
+    obj.originalValue = obj.config.startSymbol + (obj.originalValue * 1).toFixed(obj.config.decimals) + obj.config.endSymbol;
   }
 
   if (obj.config.counter === true) {
@@ -843,11 +847,11 @@ JustGage = function(config) {
       if (obj.config.textRenderer) {
         obj.txtValue.attr("text", obj.config.textRenderer(Math.floor(currentValue)));
       } else if (obj.config.humanFriendly) {
-        obj.txtValue.attr("text", humanFriendlyNumber(Math.floor(currentValue), obj.config.humanFriendlyDecimal) + obj.config.symbol);
+        obj.txtValue.attr("text", obj.config.startSymbol + humanFriendlyNumber(Math.floor(currentValue), obj.config.humanFriendlyDecimal) + obj.config.endSymbol);
       } else if (obj.config.formatNumber) {
-        obj.txtValue.attr("text", formatNumber(Math.floor(currentValue)) + obj.config.symbol);
+        obj.txtValue.attr("text", obj.config.startSymbol + formatNumber(Math.floor(currentValue)) + obj.config.endSymbol);
       } else {
-        obj.txtValue.attr("text", (currentValue * 1).toFixed(obj.config.decimals) + obj.config.symbol);
+        obj.txtValue.attr("text", obj.config.startSymbol + (currentValue * 1).toFixed(obj.config.decimals) + obj.config.endSymbol);
       }
       setDy(obj.txtValue, obj.params.valueFontSize, obj.params.valueY);
       currentValue = null;
@@ -987,11 +991,11 @@ JustGage.prototype.refresh = function(val, target, max) {
   if (obj.config.textRenderer) {
     displayVal = obj.config.textRenderer(displayVal);
   } else if (obj.config.humanFriendly) {
-    displayVal = humanFriendlyNumber(displayVal, obj.config.humanFriendlyDecimal) + obj.config.symbol;
+    displayVal = obj.config.startSymbol + humanFriendlyNumber(displayVal, obj.config.humanFriendlyDecimal) + obj.config.endSymbol;
   } else if (obj.config.formatNumber) {
-    displayVal = formatNumber((displayVal * 1).toFixed(obj.config.decimals)) + obj.config.symbol;
+    displayVal = obj.config.startSymbol + formatNumber((displayVal * 1).toFixed(obj.config.decimals)) + obj.config.endSymbol;
   } else {
-    displayVal = (displayVal * 1).toFixed(obj.config.decimals) + obj.config.symbol;
+    displayVal = obj.config.startSymbol + (displayVal * 1).toFixed(obj.config.decimals) + obj.config.endSymbol;
   }
   obj.originalValue = displayVal;
   obj.config.value = val * 1;
